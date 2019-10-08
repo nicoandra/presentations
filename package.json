@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/nicoandra/presentations#readme",
   "dependencies": {
-    "reveal-md": "^3.2.0"
+    "reveal-md": "^3.3.1"
   }
 }
