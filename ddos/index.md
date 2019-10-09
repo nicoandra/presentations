@@ -42,7 +42,7 @@ Quick intro with three samples and mitigation strategies
 ## Who am I?
 * Nicolás Andrade, Tech Lead of the Stash team
 * Former Tech Lead for multiple High-traffic top-100 websites
-* Former Code Auditor for  Information Security
+* Former Code Auditor in Information Security
 * Have been working at SSENSE for around 2 years (Joined November 21st 2017)
 
 ---
@@ -52,7 +52,7 @@ Quick intro with three samples and mitigation strategies
 ---
 **DDoS** is short for _Distributed Denial of Service_.
 
-A type of attack where multiple compromised systems are used to target a single system causing a Denial of Service (DoS) attack.
+A type of attack where multiple compromised systems are used to target a single system causing a _Denial of Service_ (DoS) attack.
 
 Victims of a DDoS attack consist of both the end targeted system and all systems maliciously used and controlled by the hacker in the distributed attack, often with a Trojan.
 
@@ -423,7 +423,26 @@ Memcache supports UDP. Attackers flooded memcached servers with spoofed requests
 
 Note: explain how big a memcache request is, and how big the response can be.
 
+----
+
+### Memcahed makes things... faster?
+
+<img src="media/ddos-memcached-fig2.png">
+
 ---
 
-# Thanks!
+### What can you do?
+* Ensure your IoT devices are not accessible from the Internet. If possible, block their access to the Internet as well.
+* Do not leave any open server, and remove unused, stale servers from the Internet.
+* Since packet manipulation requires _root_ privileges, _disable root_ accesses and accounts.
+* Disable the UDP interfaces for services that have a request-response flow
 
+---
+### Resources
+
+* https://www.shodan.io/ - Database of Internet devices.
+* https://scapy.net/ - Manipulates all kind of packets.
+
+---
+
+### Thanks for attending!
