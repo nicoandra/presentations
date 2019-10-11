@@ -101,13 +101,13 @@ Note: layer 3 and 4 is where we filter packets based on source and destination (
 
 # TCP SYN-Flood DDOS
 
----
+----
 
 #### How does TCP work?
 
 <img src="media/syn-ack-handshake.png" style="max-width: 80%">
 
----
+----
 
 #### TCP SYN-Flood DDoS
 
@@ -115,9 +115,9 @@ The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
 
 <img src="media/syn-flood.jpg" style="max-width: 90%">
 
----
+----
 
-#### TCP SYN-Flood Distributed Denial of Service attack
+#### TCP SYN-Flood DDoS
 
 * Attacker sends a `SYN`.
 * The server allocates memory to handle a new TCP connection.
@@ -130,15 +130,15 @@ The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
 * The server replies with a `SYN-ACK`...
 
 
----
+----
 
-### TCP SYN-Flood Distributed Denial of Service attack
+#### TCP SYN-Flood DDoS
 
 * The server resources are exhausted:
   * too much memory is allocated for an excessive amount of time, to handle connections that won't ever be established.
 * The server commits too much!
 
----
+----
 
 ### SYN-Flood Mitigation techniques
 
@@ -160,7 +160,7 @@ The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
 
 3. **RST cookies**: for the first request from a given client, the server intentionally sends an invalid SYN-ACK. This would result in the client generating an RST packet, which tells the server something is wrong. If this happens, the server knows the request is legitimate, logs the client, and accepts subsequent incoming connections from it.
 
----
+----
 
 ### SYN-Flood DDOS
 
@@ -176,7 +176,7 @@ Because I don't know any better
 
 ## NTP Amplification Attack
 
----
+----
 
 ### NTP works through UDP
 
@@ -205,20 +205,20 @@ Stateless is a letter sent by mail. The envelope says who is the sender and who 
 
 An application can spoof the _source address_ as it's part of the message, pretending to be someone else.
 
----
+----
 
 ### NTP Protocol
 
 The _Network Time Protocol_ (**NTP**) is a networking protocol for clock synchronization between computer systems over packet-switched, variable-latency data networks. In operation since before 1985, NTP is one of the oldest Internet protocols in current use. 
 
----
+----
 
 ### NTP Amplification Attack
 
 If the client can spoof the IP in a UDP packet, then the client can ask a server _Hey! I'm someone else. What time is it?_
 And the server will send the response to the IP listed as `source`.
 
----
+----
 
 ## Amplification?
 
@@ -256,7 +256,7 @@ In other words, 43Kb of responses:
 
 The amplification factor is around 190x !
 
----
+----
 
 ##### Amplification
 
@@ -267,7 +267,7 @@ The amplification factor is around 190x !
 #### Mitigation techniques
 
 * If you host an NTP server, disable the _monlist_ command.
-* If you are an BGP operator, ensure that you don't pass NTP packets along if the Source IP looks strange.
+* If you are an BGP operator -often a big ISP- , ensure that you don't pass NTP packets along if the Source IP looks strange.
 
 ----
 
@@ -326,7 +326,7 @@ A similar technique can be done with DNS, as DNS is also UDP based.
 ```
 
 
----
+----
 
 ### NTP Amplification Attack
 
@@ -376,6 +376,10 @@ Note: it's similar to someone talking to you very slowly. You spend time waiting
 > Host: ssense.com
 (wait 10 seconds)
 > User-Agent: Chrome V1.1 ...
+(wait 10 seconds)
+> Inexistent-Header-Number-One: RandomValue
+(wait 10 seconds)
+> Inexistent-Header-Number-Two: RandomValue
 (wait 10 seconds)
 ...
 ```
