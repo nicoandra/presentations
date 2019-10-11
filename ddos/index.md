@@ -435,7 +435,15 @@ Note: explain how big a memcache request is, and how big the response can be.
 
 ---
 
+### Key Concepts
+
+* Amplification: request size vs response size. Cost vs Outcome.
+* Reflection: trigger from point A and receive in point B.
+
+---
+
 ### What can you do?
+
 * Ensure your IoT devices are not accessible from the Internet. If possible, block their access to the Internet as well.
 * Do not leave any open server, and remove unused, stale servers from the Internet.
 * Since packet manipulation requires _root_ privileges, _disable root_ accesses and accounts.
