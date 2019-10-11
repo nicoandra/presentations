@@ -7,12 +7,12 @@ To run this presentation, please run:
 <style>
 
 span.highlight, .reveal em {
-  color: #9c2232;
+  color: #9c3242;
   font-weight: bold
 }
 
 .reveal code {
-  color: #9c2232;
+  color: #9c3242;
 }
 
 .reveal {
