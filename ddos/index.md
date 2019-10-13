@@ -7,12 +7,12 @@ To run this presentation, please run:
 <style>
 
 span.highlight, .reveal em {
-  color: #9c3242;
+  color: #9c2232;
   font-weight: bold
 }
 
 .reveal code {
-  color: #9c3242;
+  color: #9c2232;
 }
 
 .reveal {
@@ -44,6 +44,12 @@ Quick intro with three samples and mitigation strategies
 * Former Tech Lead for multiple High-traffic top-100 websites
 * Former Code Auditor in Information Security
 * Have been working at SSENSE for around 2 years (Joined November 21st 2017)
+
+---
+
+## Disclaimer
+
+I am not an expert on this subject. I am not a networking expert, nor an information security expert.
 
 ---
 
@@ -87,7 +93,9 @@ Average attack volumes grew by 194% in 12 months
 
 ## DDOS
 
-* More complex multi-vector attacks: The majority (59%) of attacks in Q4 2018 were multi-vector attacks, compared with 45% in Q4 2017. The most complex attacks seen in Q4 used up to nine different attack vectors. The three most commonly used reflection amplification vectors were CLDAP, DNS reflection and SSDP.
+More complex multi-vector attacks: The majority (59%) of attacks in Q4 2018 were multi-vector attacks, compared with 45% in Q4 2017. 
+
+The most complex attacks seen in Q4 used up to nine different attack vectors. The three most commonly used reflection amplification vectors were CLDAP, DNS reflection and SSDP.
 
 ---
 
@@ -97,92 +105,16 @@ Average attack volumes grew by 194% in 12 months
 
 Note: layer 3 and 4 is where we filter packets based on source and destination (transport)
 
----
-
-# TCP SYN-Flood DDOS
-
 ----
 
-#### How does TCP work?
+# TCP vs UDP
 
-<img src="media/syn-ack-handshake.png" style="max-width: 80%">
+* The *Transmission Control Protocol*, known as **TCP**, is a protocol of the Internet protocol suite, RFC 675 - 1974.
+* TCP provides reliable, ordered, and error-checked delivery of a stream of octets (bytes) between applications running on hosts communicating via an IP network. 
+* It is a **stateful protocol** : a communications protocol in which session information is retained by both parties, but more importantly, the server.
 
-----
-
-#### TCP SYN-Flood DDoS
-
-The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
-
-<img src="media/syn-flood.jpg" style="max-width: 90%">
-
-----
-
-#### TCP SYN-Flood DDoS
-
-* Attacker sends a `SYN`.
-* The server allocates memory to handle a new TCP connection.
-* The server replies with a `SYN-ACK` and waits for an `ACK` from the client.
-* ...and waits.
-* ...and waits.
-
-
-* While the server waits, the attacker sends a new `SYN`.
-* The server replies with a `SYN-ACK`...
-
-
-----
-
-#### TCP SYN-Flood DDoS
-
-* The server resources are exhausted:
-  * too much memory is allocated for an excessive amount of time, to handle connections that won't ever be established.
-* The server commits too much!
-
-----
-
-### SYN-Flood Mitigation techniques
-
-1. **Reduce** the amount of memory allocated for a possible upcoming connection
-  * Allocate 16 bytes during the SYN
-  * Allocate more memory when the ACK is received
-
-----
-
-### SYN-Flood Mitigation techniques
-
-2. **Reduce** the server's time-window for the ACK, so if memory is allocated, at least it is not wasted for too long.
-  * Downside is that clients with slow connections might not manage to establish a TCP connection in the expected timeframe.
-  * The downside is usually mitigated by edge servers.
-
-----
-
-### SYN-Flood Mitigation techniques
-
-3. **RST cookies**: for the first request from a given client, the server intentionally sends an invalid SYN-ACK. This would result in the client generating an RST packet, which tells the server something is wrong. If this happens, the server knows the request is legitimate, logs the client, and accepts subsequent incoming connections from it.
-
-----
-
-### SYN-Flood DDOS
-
-Questions?
-
-----
-
-# Good
-
-Because I don't know any better
-
----
-
-## NTP Amplification Attack
-
-----
-
-### NTP works through UDP
-
-* *User Datagram Protocol*, known as **UDP** is a protocol of the Internet protocol suite, RFC 768.
+* *User Datagram Protocol*, known as **UDP** is a protocol of the Internet protocol suite, RFC 768 - 1980.
 * It is a **stateless protocol** : a communications protocol in which no session information is retained by the receiver, usually a server.
-
 
 Note: Relevant session data is sent to the receiver by the client in such a way that every packet of information transferred can be understood in isolation, without context information from previous packets in the session. This property of stateless protocols makes them ideal in high volume applications, increasing performance by removing server load caused by retention of session information.
 
@@ -207,18 +139,124 @@ An application can spoof the _source address_ as it's part of the message, prete
 
 ----
 
+# TCP SYN-Flood DDOS
+
+---
+
+#### How does TCP work?
+
+<img src="media/syn-ack-handshake.png" style="max-width: 80%">
+
+---
+
+#### TCP SYN-Flood DDoS
+
+The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
+
+<img src="media/syn-flood.jpg" style="max-width: 90%">
+
+---
+
+#### TCP SYN-Flood Distributed Denial of Service attack
+
+* Attacker sends a `SYN`.
+* The server allocates memory to handle a new TCP connection.
+* The server replies with a `SYN-ACK` and waits for an `ACK` from the client.
+* ...and waits.
+* ...and waits.
+
+
+* While the server waits, the attacker sends a new `SYN`.
+* The server replies with a `SYN-ACK`...
+
+---
+
+### TCP SYN-Flood Distributed Denial of Service attack
+
+* The server resources are exhausted:
+  * too much memory is allocated for an excessive amount of time, to handle connections that won't ever be established.
+* The server commits too much!
+
+---
+
+### SYN-Flood Mitigation techniques
+
+1. **Reduce** the amount of memory allocated for a possible upcoming connection
+  * Allocate 16 bytes during the SYN
+  * Allocate more memory when the ACK is received
+
+----
+
+### SYN-Flood Mitigation techniques
+
+2. **Reduce** the server's time-window for the ACK, so if memory is allocated, at least it is not wasted for too long.
+  * Downside is that clients with slow connections might not manage to establish a TCP connection in the expected timeframe.
+  * The downside is usually mitigated by edge servers.
+
+----
+
+### SYN-Flood Mitigation techniques
+
+3. **RST cookies**: for the first request from a given client, the server intentionally sends an invalid SYN-ACK. This would result in the client generating an RST packet, which tells the server something is wrong. If this happens, the server knows the request is legitimate, logs the client, and accepts subsequent incoming connections from it.
+
+---
+
+### SYN-Flood DDOS
+
+Questions?
+
+----
+
+# Good
+
+Because I don't know any better
+
+---
+
+## NTP Amplification Attack
+
+---
+
+### NTP works through UDP
+
+* *User Datagram Protocol*, known as **UDP** is a protocol of the Internet protocol suite, RFC 768.
+* It is a **stateless protocol** : a communications protocol in which no session information is retained by the receiver, usually a server.
+
+Note: Relevant session data is sent to the receiver by the client in such a way that every packet of information transferred can be understood in isolation, without context information from previous packets in the session. This property of stateless protocols makes them ideal in high volume applications, increasing performance by removing server load caused by retention of session information.
+
+----
+
+### Stateful vs stateless
+
+<span class="highlight">TCP is stateful</span>: both client and server have some _session_ information and know the _context_ of the exchange.
+
+<span class="highlight">UDP is stateless</span>: no party is aware of the previous messages. There is no _session_ nor _context_.
+
+Note: Stateful is like a phone call. You open a connection and both parties know who they are talking to.
+Stateless is a letter sent by mail. The envelope says who is the sender and who is the receiver. But no other context information.
+
+----
+
+### UDP Packet
+
+<img src="media/IP-and-UDP-packet-headers.png">
+
+An application can spoof the _source address_ as it's part of the message, pretending to be someone else.
+
+---
+
 ### NTP Protocol
 
 The _Network Time Protocol_ (**NTP**) is a networking protocol for clock synchronization between computer systems over packet-switched, variable-latency data networks. In operation since before 1985, NTP is one of the oldest Internet protocols in current use. 
 
-----
+---
 
 ### NTP Amplification Attack
 
 If the client can spoof the IP in a UDP packet, then the client can ask a server _Hey! I'm someone else. What time is it?_
 And the server will send the response to the IP listed as `source`.
 
-----
+---
 
 ## Amplification?
 
@@ -256,7 +294,7 @@ In other words, 43Kb of responses:
 
 The amplification factor is around 190x !
 
-----
+---
 
 ##### Amplification
 
@@ -267,7 +305,7 @@ The amplification factor is around 190x !
 #### Mitigation techniques
 
 * If you host an NTP server, disable the _monlist_ command.
-* If you are an BGP operator -often a big ISP- , ensure that you don't pass NTP packets along if the Source IP looks strange.
+* If you are an BGP operator, ensure that you don't pass NTP packets along if the Source IP looks strange.
 
 ----
 
@@ -326,7 +364,7 @@ A similar technique can be done with DNS, as DNS is also UDP based.
 ```
 
 
-----
+---
 
 ### NTP Amplification Attack
 
@@ -376,10 +414,6 @@ Note: it's similar to someone talking to you very slowly. You spend time waiting
 > Host: ssense.com
 (wait 10 seconds)
 > User-Agent: Chrome V1.1 ...
-(wait 10 seconds)
-> Inexistent-Header-Number-One: RandomValue
-(wait 10 seconds)
-> Inexistent-Header-Number-Two: RandomValue
 (wait 10 seconds)
 ...
 ```
@@ -435,15 +469,7 @@ Note: explain how big a memcache request is, and how big the response can be.
 
 ---
 
-### Key Concepts
-
-* Amplification: request size vs response size. Cost vs Outcome.
-* Reflection: trigger from point A and receive in point B.
-
----
-
 ### What can you do?
-
 * Ensure your IoT devices are not accessible from the Internet. If possible, block their access to the Internet as well.
 * Do not leave any open server, and remove unused, stale servers from the Internet.
 * Since packet manipulation requires _root_ privileges, _disable root_ accesses and accounts.
