@@ -1,0 +1,24 @@
+version: '3.6'
+
+services:
+  neo4j:
+    image: 'bitnami/neo4j'
+    ports:
+      - '7474:7474'
+      - '7473:7473'
+      - '7687:7687'
+    volumes:
+      - ./volumes/neo4j:/bitnami'
+
+  node:
+    image: node:alpine
+    working_dir: /app
+    ports:
+    - '3000:3000'
+    volumes:
+    - ./code:/app
+    depends_on:
+    - neo4j
+    command:
+    - "node"
+    - "index.js"
