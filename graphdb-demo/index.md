@@ -81,14 +81,14 @@ Made up of **nodes** which are connected by **edges**
 
 ## Have you used graph databases before?
 
-### Have you used ...
+### Have you ever used ...
 
 * IMDB?
 * Facebook?
 * LinkedIn?
 * Any airline website?
-* Google Maps?
 * The internet?
+* Google Maps?
 
 ----
 
@@ -96,6 +96,7 @@ Made up of **nodes** which are connected by **edges**
 
 <img src="/media/movies.jpg" style="max-width: 80%">
 
+Note: can you spot the nodes and the edges?
 ---
 
 ## Facebook
@@ -116,53 +117,74 @@ Made up of **nodes** which are connected by **edges**
 
 ---
 
-#### Some network basics
+## The Internet
 
-<img src="/media/osi.gif" style="max-width: 80%">
+<img src="/media/internet.jpg" style="max-width: 80%">
 
-Note: layer 3 and 4 is where we filter packets based on source and destination (transport)
+---
 
-----
+## Google Maps
 
-# TCP vs UDP
-
-* The *Transmission Control Protocol*, known as **TCP**, is a protocol of the Internet protocol suite, RFC 675 - 1974.
-* TCP provides reliable, ordered, and error-checked delivery of a stream of octets (bytes) between applications running on hosts communicating via an IP network. 
-* It is a **stateful protocol** : a communications protocol in which session information is retained by both parties, but more importantly, the server.
-
-* *User Datagram Protocol*, known as **UDP** is a protocol of the Internet protocol suite, RFC 768 - 1980.
-* It is a **stateless protocol** : a communications protocol in which no session information is retained by the receiver, usually a server.
-
-Note: Relevant session data is sent to the receiver by the client in such a way that every packet of information transferred can be understood in isolation, without context information from previous packets in the session. This property of stateless protocols makes them ideal in high volume applications, increasing performance by removing server load caused by retention of session information.
+<img src="/media/googlemaps.png" style="max-width: 80%">
 
 ----
 
-### Stateful vs stateless
+## Montréal Metro
 
-<span class="highlight">TCP is stateful</span>: both client and server have some _session_ information and know the _context_ of the exchange.
+<img src="/media/plan-metro.jpg" style="max-width: 80%">
+----
 
-<span class="highlight">UDP is stateless</span>: no party is aware of the previous messages. There is no _session_ nor _context_.
+## A trip planner for Montréal Métro
+
+* **Stations** will be **nodes**.
+* Stations have 2 properties: *name* and *color*.
+
+* The tunnels that connects two stations are the **edges**.
+* The tunnels have 2 properties: *peakHours* and *normalHours*; used to store how fast (or slow) these tunnels are.
 
 Note: Stateful is like a phone call. You open a connection and both parties know who they are talking to.
 Stateless is a letter sent by mail. The envelope says who is the sender and who is the receiver. But no other context information.
 
 ----
+## A trip planner for Montréal Métro
 
-### UDP Packet
+* The stations that exists in two lines at the same time (like Berri-UQÀM and Jean-Talon) are two different stations, one for each line.
+* Stations having the same name but different color are connected through the stairs. These stairs are also **edges**.
+* The stairs can have two properties: *peakHours* and *normalHours*; used to store how fast (or slow) the transit is.
 
-<img src="media/IP-and-UDP-packet-headers.png">
+----
+## A trip planner for Montréal Métro
 
-An application can spoof the _source address_ as it's part of the message, pretending to be someone else.
+* It does not matter what *peakHours* and *normalHours* mean. We'll use an arbitrary number.
+* We can consider the number as _speed_, so the higher the number the faster the route is;
+* We we can consider the number as _crowded_, so the more crowded a route is, the slower the traffic is.
 
 ----
 
-# TCP SYN-Flood DDOS
+## Some syntax
+
+A node is represented as in ASCII Art:
+
+```
+(nodeName:nodeClass { nodeProperty: propertyValue})
+```
+
+## Some syntax
+
+A link is also as in ASCII Art:
+
+```
+(:Employee { name: "Bernard"})-[link1:MEMBER_OF_TEAM {since:"January 2018"}]->(:Team {name: "Stash"})
+```
 
 ---
 
-#### How does TCP work?
+## The query language
 
-<img src="media/syn-ack-handshake.png" style="max-width: 80%">
+`MATCH` is used as some kind of `SELECT`
+`MERGE` and `CREATE` are used as some sort of `INSERT` and `UPDATE``
+
+But to be honest there's no one-to-one mapping. You'll need to destructure yourself and switch to a graph mindset!
 
 ---
 
