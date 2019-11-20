@@ -1,5 +1,5 @@
 const neo4j = require('neo4j')
-const db = new neo4j.GraphDatabase('http://neo4j:bitnami@localhost:7474', (err, res) => {
+const db = new neo4j.GraphDatabase('http://neo4j:bitnami@neo4j:7474', (err, res) => {
   console.log('eee')
   if (err) {
     console.err(err)
@@ -17,26 +17,26 @@ console.log(err, res)})
 ******/
 
 const lines = {
-  'green': [ 'ANGRIGNON', 'MONK', 'JOLICOEUR', 'VERDUN', "DE L'ÉGLISE", 'LASALLE', 'CHARLEVOIX', 'LIONEL-GROULX',
+  'green': [ 'ANGRIGNON', 'MONK', 'JOLICOEUR', 'VERDUN', "DE L'EGLISE", 'LASALLE', 'CHARLEVOIX', 'LIONEL-GROULX',
     'ATWATER', 'GUY-CONCORDIA', 'PEEL', 'MCGILL', 'PLACE-DES-ARTS', 'SAINT-LAURENT', 'BERRI-UQAM', 'BEAUDRY', 'PAPINEAU',
-    'FRONTENAC', 'PRÉFONTAINE', 'JOLIETTE', 'PIE-IX', 'VIAU', 'ASSOMPTION', 'CADILLAC', 'LANGELIER', 'RADISSON',
-    'HONORÉ-BEAUGRAND'  ],
+    'FRONTENAC', 'PREFONTAINE', 'JOLIETTE', 'PIE-IX', 'VIAU', 'ASSOMPTION', 'CADILLAC', 'LANGELIER', 'RADISSON',
+    'HONORE-BEAUGRAND'  ],
 
-  'yellow': [ 'LONGUEUIL–UNIVERSITÉ-DE-SHERBROOKE', 'JEAN-DRAPEAU', 'BERRI-UQAM'],
-  'blue': [ 'SNOWDON', 'CÔTE-DES-NEIGES', 'UNIVERSITÉ-DE-MONTRÉAL',
-    'ÉDOUARD-MONTPETIT', 'OUTREMONT', 'ACADIE',
+  'yellow': [ 'LONGUEUIL–UNIVERSITE-DE-SHERBROOKE', 'JEAN-DRAPEAU', 'BERRI-UQAM'],
+  'blue': [ 'SNOWDON', 'COTE-DES-NEIGES', 'UNIVERSITE-DE-MONTREAL',
+    'EDOUARD-MONTPETIT', 'OUTREMONT', 'ACADIE',
     'PARC', 'DE CASTELNAU', 'JEAN-TALON', 'FABRE',
     "D'IBERVILLE", 'SAINT-MICHEL'
   ],
   'orange': [
-    'CÔTE-VERTU', 'DU COLLÈGE', 'DE LA SAVANE', 'NAMUR',
-    'PLAMONDON', 'CÔTE-SAINTE-CATHERINE', 'SNOWDON', 'VILLA-MARIA',
-    'VENDÔME', 'PLACE-SAINT-HENRI', 'LIONEL-GROULX', 'GEORGES-VANIER',
+    'COTE-VERTU', 'DU COLLEGE', 'DE LA SAVANE', 'NAMUR',
+    'PLAMONDON', 'COTE-SAINTE-CATHERINE', 'SNOWDON', 'VILLA-MARIA',
+    'VENDOME', 'PLACE-SAINT-HENRI', 'LIONEL-GROULX', 'GEORGES-VANIER',
     "LUCIEN-L'ALLIER", 'BONAVENTURE',
     'SQUARE-VICTORIA-OACI', "PLACE-D'ARMES",
     'CHAMP-DE-MARS', 'BERRI-UQAM', 'SHERBROOKE',
     'MONT-ROYAL', 'LAURIER', 'ROSEMONT', 'BEAUBIEN', 'JEAN-TALON',
-    'JARRY', 'CRÉMAZIE', 'SAUVÉ', 'HENRI-BOURASSA',
+    'JARRY', 'CREMAZIE', 'SAUVE', 'HENRI-BOURASSA',
     'CARTIER', 'DE LA CONCORDE', 'MONTMORENCY']
 }
 
@@ -79,6 +79,17 @@ s.forEach((a) => {
 
 /*
 
+// Clear up 
+MATCH (r) DETACH DELETE r
+
+See what we have:
+MATCH (s1:Station)-[:connectsWith]->(s2:Station) RETURN *
+
+MATCH yellowLine=(s1:Station)-[:connectsWith]->(s2:Station) RETURN yellowLine
+
+// Go from Berri-UQAM orange to Berri Uqam yellow:
+
+
 Relate those that are in the same building
 
 See: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name RETURN s1, s2 LIMIT 50
@@ -86,7 +97,6 @@ See: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name RETUR
 Merge: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name MERGE (s1)-[:sharesBuildingWith]->(s2) MERGE (s2)-[:sharesBuildingWith]->(s1)
 
  
-
 MATCH myRide = shortestPath((s1:Station {name:"DE CASTELNAU"})-[*1..20]-(s2:Station {name:"FRONTENAC"})) RETURN myRide
 
 MATCH myRide = shortestPath((s1:Station {name:"BERRI-UQAM"})-[*1..20]->(s2:Station {name:"FRONTENAC"})) WITH myRide, LENGTH(myRide) as howManyStations RETURN myRide ORDER BY howManyStations DESC LIMIT 1

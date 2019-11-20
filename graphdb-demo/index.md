@@ -188,11 +188,15 @@ But to be honest there's no one-to-one mapping. You'll need to destructure yours
 
 ---
 
-#### TCP SYN-Flood DDoS
+## Hands on, create the map!
 
-The TCP SYN-Flood attack exploits the TCP 3-way handshake mechanism.
+```
+docker-compose up neo4j ;
+docker-compose up node ;
+```
 
-<img src="media/syn-flood.jpg" style="max-width: 90%">
+* Visit http://127.0.0.1:7474
+* Connect as `neo4j`, `bitnami`
 
 ---
 
