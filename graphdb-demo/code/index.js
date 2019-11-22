@@ -200,10 +200,27 @@ RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS
 // I go from home to ssense. My colleague goes from lasalle to cremazie
 // For the sake of simplicity I'll do it with shortest paths (so not based on peak hours)
 
+
+// DEMO OF ALL PATHS
 MATCH 
-  myRide = (s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"}),
-  theirRide = (s1:Station {name:"LASALLE"})-[*1..25]->(s2:Station {name:"CREMAZIE"})
-WITH myRide, theirRide
+  myRide = shortestpath((s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"})),
+  theirRide = shortestpath((s3:Station {name:"LASALLE"})-[*1..25]->(s4:Station {name:"CREMAZIE"}))
+RETURN myRide, theirRide
+
+
+// STILL NOT WORKING BUT ALMOST THERE
+
+MATCH 
+  myRide = shortestpath((s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"})),
+  theirRide = shortestpath((s3:Station {name:"LASALLE"})-[*1..25]->(s4:Station {name:"CREMAZIE"}))
+WITH FILTER(station IN nodes(myRide) WHERE station IN nodes(theirRide)) AS ourIntersection, myRide, theirRide
+RETURN myRide, theirRide, ourIntersection
+
+
+
+
+
+// exists()
 
 UNWIND(rels) as unwondRels
 RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC LIMIT 1
