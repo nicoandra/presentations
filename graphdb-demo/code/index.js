@@ -85,26 +85,132 @@ MATCH (r) DETACH DELETE r
 See what we have:
 MATCH (s1:Station)-[:connectsWith]->(s2:Station) RETURN *
 
-MATCH yellowLine=(s1:Station)-[:connectsWith]->(s2:Station) RETURN yellowLine
+MATCH yellowLine=(s1:Station {color:"yellow"})-[:connectsWith]->(s2:Station {color:"yellow"}) RETURN yellowLine
+MATCH orangeLine=(s1:Station {color:"orange"})-[:]->(s2:Station {color:"orange"}) RETURN orangeLine
 
-// Go from Berri-UQAM orange to Berri Uqam yellow:
+// First try ...
+MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) RETURN myCommute
+
+MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
 
 
-Relate those that are in the same building
+// Learning: a PATH has a Length
 
+// Good, let's see how we can switch lines now:
+
+MATCH myCommute=(s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
+
+
+// Well that's because there are 2 berri-uqams that are not connected:
+
+MATCH (s1:Station {name:"BERRI-UQAM"}), (s2:Station {name:"BERRI-UQAM"}) WHERE s1 <> s2 RETURN *
+
+
+// Are they connected?
+MATCH (s1:Station {name:"BERRI-UQAM"}), (s2:Station {name:"BERRI-UQAM"}) WITH s1, s2, (s1)-[*1..2]-(s2) AS path WHERE s1 <> s2 RETURN path
+// Notice there ARE results because the "MATCH" worked, but there are no paths.
+
+
+// Let's connect them.
 See: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name RETURN s1, s2 LIMIT 50
 
-Merge: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name MERGE (s1)-[:sharesBuildingWith]->(s2) MERGE (s2)-[:sharesBuildingWith]->(s1)
+Merge: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name MERGE (s1)-[:sharesBuildingWith {peak: 10, normal: 1}]->(s2) MERGE (s2)-[:sharesBuildingWith]->(s1)
 
- 
-MATCH myRide = shortestPath((s1:Station {name:"DE CASTELNAU"})-[*1..20]-(s2:Station {name:"FRONTENAC"})) RETURN myRide
 
-MATCH myRide = shortestPath((s1:Station {name:"BERRI-UQAM"})-[*1..20]->(s2:Station {name:"FRONTENAC"})) WITH myRide, LENGTH(myRide) as howManyStations RETURN myRide ORDER BY howManyStations DESC LIMIT 1
 
-MATCH myRide = shortestPath((s1:Station {name:"BERRI-UQAM"})-[*1..20]->(s2:Station {name:"LIONEL-GROULX"})) 
+
+// Good, let's see how we can switch lines now:
+
+MATCH myCommute=(s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
+
+// Come on, now is the moment for the applause :)
+
+// Let's make it nicer
+MATCH myCommute=shortestpath((s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"})) RETURN myCommute 
+
+
+
+// Let's try a few others just to know it was not by chance:
+
+
+MATCH myRide = shortestPath((s1:Station {name:"ACADIE"})-[*1..20]-(s2:Station {name:"FRONTENAC"})) RETURN myRide
+
+
+// Skip this one MATCH myRide = shortestPath((s1:Station {name:"BERRI-UQAM"})-[*1..20]->(s2:Station {name:"FRONTENAC"})) WITH myRide, LENGTH(myRide) as howManyStations RETURN myRide ORDER BY howManyStations DESC LIMIT 1
+
+// The shortest path, with scores of how long it would be during peak hours and normal hours. But always the shortest path.
+
+MATCH myRide = shortestPath((s1:Station {name:"ACADIE"})-[*1..20]->(s2:Station {name:"FRONTENAC"})) 
 WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
 UNWIND(rels) as unwondRels
-RETURN myRide, howDepth, SUM(unwondRels.peak), SUM(unwondRels.normal) ORDER BY howDepth ASC
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY howDepth ASC
+
+
+// And order by the time it takes?
+
+MATCH myRide = shortestPath((s1:Station {name:"ACADIE"})-[*1..20]->(s2:Station {name:"FRONTENAC"})) 
+WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
+UNWIND(rels) as unwondRels
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC
+
+
+// The reason why it's the same time is because we're FORCING the shortest path (so as little stations as possible)
+
+
+MATCH myRide = (s1:Station {name:"ACADIE"})-[*1..25]->(s2:Station {name:"FRONTENAC"}) 
+WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
+UNWIND(rels) as unwondRels
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC LIMIT 1
+
+// It seems like it takes the same time. Let's change the time it takes to switch lines at BERRI UQAM
+
+MATCH (orange:Station {name:"BERRI-UQAM"})-[connectionTime:sharesBuildingWith]->(green:Station {name:"BERRI-UQAM"})
+SET connectionTime.peak = 100
+
+
+
+
+// Check the ride now! I should get a new route
+
+
+MATCH myRide = (s1:Station {name:"ACADIE"})-[*1..25]->(s2:Station {name:"FRONTENAC"}) 
+WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
+UNWIND(rels) as unwondRels
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC LIMIT 1
+
+
+// Pretend the green line is is broken now
+
+MATCH path=(s1:Station {name:"ATWATER"})-[connectionTime:connectsWith *1..5]->(s2:Station {name:"MCGILL"})
+FOREACH (r IN relationships(path) | SET r.peak = 40)
+
+// Try again
+
+
+MATCH myRide = (s1:Station {name:"ACADIE"})-[*1..25]->(s2:Station {name:"FRONTENAC"}) 
+WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
+UNWIND(rels) as unwondRels
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC LIMIT 1
+
+
+// Applauses!
+// So now, what else can we do with this?
+
+// Let's ask the system in which stations I might cross paths with a colleague . 
+// I go from home to ssense. My colleague goes from lasalle to cremazie
+// For the sake of simplicity I'll do it with shortest paths (so not based on peak hours)
+
+MATCH 
+  myRide = (s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"}),
+  theirRide = (s1:Station {name:"LASALLE"})-[*1..25]->(s2:Station {name:"CREMAZIE"})
+WITH myRide, theirRide
+
+UNWIND(rels) as unwondRels
+RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC LIMIT 1
+
+
+
+
 
 MATCH greenLinks = (s1:Station {color:"green"})-[r:connectsWith]->(s2:Station {color:"green"})
 FOREACH (r in relationships(greenLinks) | SET r.peak = 22, r.normal = 2)
