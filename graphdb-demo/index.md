@@ -1,18 +1,16 @@
 <!--
 To run this presentation, please run:
 
-./node_modules/.bin/reveal-md graphdb-demo/index.md -w --theme blood
+./node_modules/.bin/reveal-md graphdb-demo/index.md -w --theme white
 -->
 
 <style>
 
 span.highlight, .reveal em {
-  color: #9c2232;
   font-weight: bold
 }
 
 .reveal code {
-  color: #9c2232;
 }
 
 .reveal {
@@ -49,7 +47,11 @@ Quick intro with a few examples
 
 ## Disclaimer
 
-I am not an expert on this subject. I'd consider myself amateur on graph theory and graph databases. This presentation might include mistakes, errors, anti-patterns and similar bad practices.
+I am not an expert on this subject.
+
+I consider myself amateur on graph theory and graph databases.
+
+This presentation might include mistakes, errors, anti-patterns and similar bad practices.
 
 ---
 
@@ -58,13 +60,14 @@ I am not an expert on this subject. I'd consider myself amateur on graph theory 
 ---
 In mathematics, **Graph theory** is the study of graphs, which are mathematical structures used to model pairwise relations between objects.
 
-A graph in this context is made up of vertices (also called nodes or points) which are connected by edges (also called links or lines).
+A *graph* in this context is made up of *vertices* (also called *nodes* or *points*) which are connected by *edges* (also called *links* or *lines*).
 
 ----
 
 ## Nodes and edges
 
 Made up of **nodes** which are connected by **edges**
+
 <img src="/media/one.png" style="max-width: 80%">
 
 ----
@@ -79,9 +82,16 @@ Made up of **nodes** which are connected by **edges**
 
 ----
 
-## Have you used graph databases before?
+## Nodes and edges are database entities
 
-### Have you ever used ...
+* They have an ID, and might have a name and other properties.
+* The attributes of the nodes and edges are schema-less. 
+
+<img src="/media/properties.jpg">
+
+---
+
+## Have you ever used ...
 
 * IMDB?
 * Facebook?
@@ -97,41 +107,43 @@ Made up of **nodes** which are connected by **edges**
 <img src="/media/movies.jpg" style="max-width: 80%">
 
 Note: can you spot the nodes and the edges?
----
+
+----
 
 ## Facebook
 
 <img src="/media/socialgraph.png" style="max-width: 80%">
 
----
+----
 
 ## LinkedIn
 
 <img src="/media/linkedin.png" style="max-width: 80%">
 
----
+----
 
 ## Airports
 
 <img src="/media/brazil.jpg" style="max-width: 80%">
 
----
+----
 
 ## The Internet
 
 <img src="/media/internet.jpg" style="max-width: 80%">
 
----
+----
 
 ## Google Maps
 
 <img src="/media/googlemaps.png" style="max-width: 80%">
 
-----
+---
 
 ## Montréal Metro
 
 <img src="/media/plan-metro.jpg" style="max-width: 80%">
+
 ----
 
 ## A trip planner for Montréal Métro
@@ -139,29 +151,28 @@ Note: can you spot the nodes and the edges?
 * **Stations** will be **nodes**.
 * Stations have 2 properties: *name* and *color*.
 
-* The tunnels that connects two stations are the **edges**.
-* The tunnels have 2 properties: *peakHours* and *normalHours*; used to store how fast (or slow) these tunnels are.
-
-Note: Stateful is like a phone call. You open a connection and both parties know who they are talking to.
-Stateless is a letter sent by mail. The envelope says who is the sender and who is the receiver. But no other context information.
+* The tunnels that connect two stations are the **edges**.
+* Tunnels have 2 properties: *peak* and *normal*; used to store how fast (or slow) these tunnels are during peak and normal hours.
 
 ----
+
 ## A trip planner for Montréal Métro
 
-* The stations that exists in two lines at the same time (like Berri-UQÀM and Jean-Talon) are two different stations, one for each line.
+* The stations that exists in two lines at the same time (like Berri-UQÀM and Jean-Talon) will be two different stations, one for each line.
 * Stations having the same name but different color are connected through the stairs. These stairs are also **edges**.
-* The stairs can have two properties: *peakHours* and *normalHours*; used to store how fast (or slow) the transit is.
+* The stairs can have two properties: *peak* and *normal*; used to store how fast (or slow) the transit is.
 
 ----
+
 ## A trip planner for Montréal Métro
 
 * It does not matter what *peakHours* and *normalHours* mean. We'll use an arbitrary number.
-* We can consider the number as _speed_, so the higher the number the faster the route is;
-* We we can consider the number as _crowded_, so the more crowded a route is, the slower the traffic is.
+* We could consider the number as _speed_, so the higher the number the faster the route is;
+* Or we could consider the number as _crowded_, so the more crowded a route is, the slower the traffic is.
 
-----
+---
 
-## Some syntax
+## Syntax
 
 A node is represented as in ASCII Art:
 
@@ -169,20 +180,24 @@ A node is represented as in ASCII Art:
 (nodeName:nodeClass { nodeProperty: propertyValue})
 ```
 
+----
+
 ## Some syntax
 
 A link is also as in ASCII Art:
 
-```
-(:Employee { name: "Bernard"})-[link1:MEMBER_OF_TEAM {since:"January 2018"}]->(:Team {name: "Stash"})
-```
+`(node1)-[LINK]->(node2)`
+
+
+`(:Developer { name: "Bernard"})-[link1:MEMBER_OF_TEAM {since:"January 2018"}]->(:Team {name: "Stash"})`
 
 ---
 
 ## The query language
 
 `MATCH` is used as some kind of `SELECT`
-`MERGE` and `CREATE` are used as some sort of `INSERT` and `UPDATE``
+
+`MERGE` and `CREATE` are used as some sort of `INSERT` and `UPDATE`
 
 But to be honest there's no one-to-one mapping. You'll need to destructure yourself and switch to a graph mindset!
 
@@ -202,9 +217,50 @@ docker-compose up node ;
 
 ## Quick summary
 
-* We've learned to `MATCH` nodes and patterns.
-* We've learned a few query keywords, such as `FOREACH`, `SET`, `RETURN`, `WITH` and `UNWIND`
+* We can `MATCH` nodes and patterns.
+* Query results can be manipulated at multiple states thanks to `FOREACH`, `SET`, `RETURN`, `WITH` and `UNWIND`
 * We've learned ask the database engine to find the existing patterns
+
+----
+
+## An array
+
+```
+WITH 
+  'hey' AS v1, 
+  [1,2,3,4,5] AS v2 
+RETURN *
+```
+
+One row.
+
+----
+
+## An unwound array
+
+```
+WITH 
+  'hey' AS v1, 
+  [1,2,3,4,5] AS v2 
+UNWIND v2 AS v3 
+RETURN *
+```
+
+Five rows, three fields.
+
+----
+
+# Challenge
+
+## What's the result?
+
+```
+WITH 
+  'hey' AS v1, 
+  [] AS v2 
+UNWIND v2 AS v3 
+RETURN *
+```
 
 ---
 
