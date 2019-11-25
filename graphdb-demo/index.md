@@ -11,6 +11,7 @@ span.highlight, .reveal em {
 }
 
 .reveal code {
+  font-weight: bold
 }
 
 .reveal {
@@ -28,6 +29,8 @@ span.highlight, .reveal em {
 .reveal h3 {
   font-size: 1.2em
 }
+
+
 </style>
 
 # Graph databases
@@ -39,9 +42,8 @@ Quick intro with a few examples
 
 ## Who am I?
 * Nicolás Andrade, Tech Lead of the Stash team
-* Former Tech Lead for multiple High-traffic top-100 websites
-* Former Code Auditor in Information Security
-* Have been working at SSENSE for around 2 years (Joined November 21st 2017)
+* Former Tech Lead and Lead Code Auditor for multiple High-traffic top-100 websites
+* Have been working at SSENSE for 2 years (Joined November 21st 2017)
 
 ---
 
@@ -49,15 +51,22 @@ Quick intro with a few examples
 
 I am not an expert on this subject.
 
-I consider myself amateur on graph theory and graph databases.
+I consider myself unskilled on graph theory and graph databases.
 
-This presentation might include mistakes, errors, anti-patterns and similar bad practices.
+This presentation might include mistakes, errors, anti-patterns and similar bad practices. 
+
+----
+
+## Disclaimer
+
+You are hereby notified that the queries displayed in these slides are performed by professionals in controlled environments, such as docker containers. Feel free to attempt to duplicate, re-create, or perform the same or similar queries and tricks at home, no personal injury or property damage should result. The producer of these slides is not responsible for any injury or damage should they appear.
 
 ---
 
 # Graph theory
 
----
+----
+
 In mathematics, **Graph theory** is the study of graphs, which are mathematical structures used to model pairwise relations between objects.
 
 A *graph* in this context is made up of *vertices* (also called *nodes* or *points*) which are connected by *edges* (also called *links* or *lines*).
@@ -146,7 +155,7 @@ Note: can you spot the nodes and the edges?
 
 ----
 
-## A trip planner for Montréal Métro
+## Build a trip planner
 
 * **Stations** will be **nodes**.
 * Stations have 2 properties: *name* and *color*.
@@ -161,6 +170,23 @@ Note: can you spot the nodes and the edges?
 * The stations that exists in two lines at the same time (like Berri-UQÀM and Jean-Talon) will be two different stations, one for each line.
 * Stations having the same name but different color are connected through the stairs. These stairs are also **edges**.
 * The stairs can have two properties: *peak* and *normal*; used to store how fast (or slow) the transit is.
+
+----
+
+Stations having the same name but different color are connected through the stairs. These stairs are also **edges**.
+
+<img src="/media/stations-sharesbuilding.svg" style="max-width: 80%">
+
+----
+
+## A trip planner for Montréal Métro
+
+ We'll compute plans based on two different criteria:
+ 
+ 1. The shortest path, so *traversing* the least amount of stations we can.
+ 2. The weighted path, so *traversing* the stations in such a way that we get the lowest (or highest) score.
+
+The _score_ will come from adding up the *peak* or *normal* values of all the involved relationships.
 
 ----
 
@@ -198,6 +224,8 @@ A link is also as in ASCII Art:
 `MATCH` is used as some kind of `SELECT`
 
 `MERGE` and `CREATE` are used as some sort of `INSERT` and `UPDATE`
+
+But to be honest there's no one-to-one mapping. You'll need to destructure yourself and switch to a graph mindset!
 
 But to be honest there's no one-to-one mapping. You'll need to destructure yourself and switch to a graph mindset!
 
