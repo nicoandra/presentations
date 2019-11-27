@@ -59,7 +59,7 @@ This presentation might include mistakes, errors, anti-patterns and similar bad 
 
 ## Disclaimer
 
-You are hereby notified that the queries displayed in these slides are performed by professionals in controlled environments, such as docker containers. Feel free to attempt to duplicate, re-create, or perform the same or similar queries and tricks at home, no personal injury or property damage should result. The producer of these slides is not responsible for any injury or damage should they appear.
+You are hereby notified that the queries displayed in these slides are performed by professionals in controlled environments, such as docker containers. Feel free to attempt to duplicate, re-create, or perform the same or similar queries and tricks at home, no personal injury or property damage is expected to result; but if the case they occur, the producer of these slides is not responsible for any resulting injury or damage.
 
 ---
 
@@ -75,7 +75,9 @@ A *graph* in this context is made up of *vertices* (also called *nodes* or *poin
 
 ## Nodes and edges
 
-Made up of **nodes** which are connected by **edges**
+> Structures used to model pairwise relations between objects.
+
+> Made up of **nodes** which are connected by **edges**
 
 <img src="/media/one.png" style="max-width: 80%">
 
@@ -88,15 +90,8 @@ Made up of **nodes** which are connected by **edges**
 * They all have an ID, and might have a name and other properties.
 * The attributes of the nodes and edges are schema-less. Think of them as documents.
 
-
-----
-
-## Nodes and edges are database entities
-
-* They have an ID, and might have a name and other properties.
-* The attributes of the nodes and edges are schema-less. 
-
 <img src="/media/properties.jpg">
+
 
 ---
 
@@ -157,12 +152,29 @@ Note: can you spot the nodes and the edges?
 
 ## Build a trip planner
 
+### Ingredients
+
+* Docker, 1 installation
+* Neo4j, 1 image
+* BackEnd language, to taste. I did it with JavaScript.
+
+----
+
+## Build a trip planner
+
 * **Stations** will be **nodes**.
+* **Tunnels** will be **edges**
+
+<img src="/media/stations-sharesbuilding.svg" style="max-width: 80%">
+
+----
+
+## Build a trip planner
+
 * Stations have 2 properties: *name* and *color*.
+* Tunnels have 2 properties: *peak* and *normal*; that store how efficient the service is between the linked stations.
 
-* The tunnels that connect two stations are the **edges**.
-* Tunnels have 2 properties: *peak* and *normal*; used to store how fast (or slow) these tunnels are during peak and normal hours.
-
+<img src="/media/stations-sharesbuilding.svg" style="max-width: 80%">
 ----
 
 ## A trip planner for Montréal Métro
@@ -186,7 +198,7 @@ Stations having the same name but different color are connected through the stai
  1. The shortest path, so *traversing* the least amount of stations we can.
  2. The weighted path, so *traversing* the stations in such a way that we get the lowest (or highest) score.
 
-The _score_ will come from adding up the *peak* or *normal* values of all the involved relationships.
+The _score_ will be computed by adding up the *peak* or *normal* values of all the involved relationships.
 
 ----
 

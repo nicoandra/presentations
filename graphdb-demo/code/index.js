@@ -1,6 +1,5 @@
 const neo4j = require('neo4j')
 const db = new neo4j.GraphDatabase('http://neo4j:bitnami@neo4j:7474', (err, res) => {
-  console.log('eee')
   if (err) {
     console.err(err)
     return
@@ -81,6 +80,8 @@ s.forEach((a) => {
 
 // Clear up 
 MATCH (r) DETACH DELETE r
+
+// 
 
 See what we have:
 MATCH (s1:Station)-[:connectsWith]->(s2:Station) RETURN *
