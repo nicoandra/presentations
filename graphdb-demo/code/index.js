@@ -87,27 +87,35 @@ See what we have:
 MATCH (s1:Station)-[:connectsWith]->(s2:Station) RETURN *
 
 MATCH yellowLine=(s1:Station {color:"yellow"})-[:connectsWith]->(s2:Station {color:"yellow"}) RETURN yellowLine
-MATCH orangeLine=(s1:Station {color:"orange"})-[:]->(s2:Station {color:"orange"}) RETURN orangeLine
+MATCH orangeLine=(s1:Station {color:"orange"})-[]->(s2:Station {color:"orange"}) RETURN orangeLine
 
 // First try ...
-MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) RETURN myCommute
+MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..20]->(s2:Station {name:"CREMAZIE"}) RETURN myCommute LIMIT 1
 
-MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
-
+MATCH myCommute=(s1:Station {name:"BONAVENTURE"})-[*1..50]->(s2:Station {name:"CREMAZIE"}) 
+  WITH myCommute, length(myCommute) AS howManyStations 
+  RETURN myCommute, howManyStations ORDER BY howManyStations ASC LIMIT 5
 
 // Learning: a PATH has a Length
 
 // Good, let's see how we can switch lines now:
 
-MATCH myCommute=(s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
+MATCH myCommute=(s1:Station {name:"FRONTENAC"})-[*1..50]->(s2:Station {name:"CREMAZIE"}) 
+WITH 
+  myCommute, 
+  length(myCommute) AS howManyStations 
+RETURN 
+  myCommute 
+ORDER BY 
+  howManyStations ASC LIMIT 1
 
 
 // Well that's because there are 2 berri-uqams that are not connected:
 
 MATCH (s1:Station {name:"BERRI-UQAM"}), (s2:Station {name:"BERRI-UQAM"}) WHERE s1 <> s2 RETURN *
 
-
 // Are they connected?
+MATCH path=(s1:Station {name:"BERRI-UQAM"})-[]->(s2:Station {name:"BERRI-UQAM"}) WHERE s1 <> s2 RETURN path
 MATCH (s1:Station {name:"BERRI-UQAM"}), (s2:Station {name:"BERRI-UQAM"}) WITH s1, s2, (s1)-[*1..2]-(s2) AS path WHERE s1 <> s2 RETURN path
 // Notice there ARE results because the "MATCH" worked, but there are no paths.
 
@@ -122,17 +130,23 @@ Merge: MATCH (s1:Station), (s2:Station) WHERE s2 <> s1 AND s1.name = s2.name MER
 
 // Good, let's see how we can switch lines now:
 
-MATCH myCommute=(s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"}) WITH myCommute, length(myCommute) AS howManyStations  RETURN myCommute ORDER BY howManyStations ASC LIMIT 1
+MATCH 
+  myCommute=(s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"}) 
+WITH 
+  myCommute, length(myCommute) AS howManyStations 
+RETURN 
+  myCommute 
+ORDER BY 
+  howManyStations ASC LIMIT 1
 
 // Come on, now is the moment for the applause :)
 
 // Let's make it nicer
-MATCH myCommute=shortestpath((s1:Station {name:"FRONTENAC"})-[*1..15]->(s2:Station {name:"CREMAZIE"})) RETURN myCommute 
+MATCH myCommute=shortestpath((s1:Station {name:"FRONTENAC"})-[*1..25]->(s2:Station {name:"CREMAZIE"})) RETURN myCommute 
 
 
 
 // Let's try a few others just to know it was not by chance:
-
 
 MATCH myRide = shortestPath((s1:Station {name:"ACADIE"})-[*1..20]-(s2:Station {name:"FRONTENAC"})) RETURN myRide
 
@@ -154,7 +168,6 @@ WITH myRide, length(myRide) as howDepth, relationships(myRide) AS rels
 UNWIND(rels) as unwondRels
 RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS normal ORDER BY peak ASC
 
-
 // The reason why it's the same time is because we're FORCING the shortest path (so as little stations as possible)
 
 
@@ -169,8 +182,6 @@ MATCH (orange:Station {name:"BERRI-UQAM"})-[connectionTime:sharesBuildingWith]->
 SET connectionTime.peak = 100
 
 
-
-
 // Check the ride now! I should get a new route
 
 
@@ -181,6 +192,8 @@ RETURN myRide, howDepth, SUM(unwondRels.peak) AS peak, SUM(unwondRels.normal) AS
 
 
 // Pretend the green line is is broken now
+
+
 
 MATCH path=(s1:Station {name:"ATWATER"})-[connectionTime:connectsWith *1..5]->(s2:Station {name:"MCGILL"})
 FOREACH (r IN relationships(path) | SET r.peak = 40)
