@@ -58,7 +58,7 @@ const s = Object.keys(lines).map((lineColor) => {
   return lines[lineColor].reduce((accumulated, current, index) => {
     const { peak, normal } = delays[lineColor].tbs
 
-    const stationNode = '(s' + index + ':Station {name: "' + current + '", color:"' + lineColor + '"})'
+    const stationNode = '(s' + index + ':Station:Color'+lineColor+' {name: "' + current + '", color:"' + lineColor + '"})'
     const connectsWith = '[:connectsWith {peak: ' + peak + ', normal: ' + normal + '}]'
 
     accumulated.create += (accumulated.create == '' ? 'CREATE ' : ', ') + stationNode
