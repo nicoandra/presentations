@@ -1,0 +1,40 @@
+version: '3.6'
+# Sources 
+# https://stackoverflow.com/questions/52664011/increase-of-requests-count-end-up-with-error-socket-hang-up
+services:
+  client:
+    image: node:alpine
+    working_dir: /app
+    volumes:
+    - ./code:/app
+    command:
+    - "node"
+    - "client.js"
+    # sysctls:
+      # net.ipv4.ip_local_port_range: 1024 1223
+
+  server:
+    image: node:13.2.0-stretch
+    working_dir: /app
+    ports:
+    - '3000:3000'
+    volumes:
+    - ./code:/app
+    command:
+    - "node"
+    - "server.js"
+    environment:
+    - SLOWDOWN_MS=10
+    sysctls:
+      net.core.somaxconn: 1
+
+  proxy:
+    image: node:alpine
+    working_dir: /app
+    ports:
+    - '3001:3000'
+    volumes:
+    - ./code:/app
+    command:
+    - "node"
+    - "proxy.js"
