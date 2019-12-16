@@ -1,0 +1,7 @@
+version: "3.6"
+
+services:
+  py:
+    build: .
+    ports:
+    - 6426:6426
