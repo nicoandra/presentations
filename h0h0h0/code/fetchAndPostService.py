@@ -1,3 +1,4 @@
+import os 
 from flask import Flask, request
 from urllib import request as urllibrequest
 
@@ -5,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET'])
 def index():
-    return '<br>'.join([
+    return '<br>\n'.join([
         "Fetch and Post running. This service helps to avoid censorship in the world.",
         "",
         "You can use this service to access a URL that is blocked to you.",
@@ -17,7 +18,9 @@ def index():
         "For example, if you post {url :'http://google.com'} I'll download the source of the page and send it to you.",
         "",
         "Please don't try to hack this, it is written in Python, a super secure language that is also very performant.",
-        "It is SOOOO performant that you can run multiple services in the same container,  ...",
+        "It is SOOOO performant that you can run multiple services in the same container, maybe listening in different ports ...",
+        "",
+        "Serving this file from " + os.path.realpath(__file__)
     ])
 
 @app.route("/", methods=['POST'])
