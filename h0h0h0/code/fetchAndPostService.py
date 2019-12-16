@@ -20,7 +20,8 @@ def index():
         "Please don't try to hack this, it is written in Python, a super secure language that is also very performant.",
         "It is SOOOO performant that you can run multiple services in the same container, maybe listening in different ports ...",
         "",
-        "Serving this file from " + os.path.realpath(__file__)
+        "Serving this file from " + os.path.realpath(__file__),
+        "<!-- <a href=\"/the-easy-one\">If you really need a flag, click here</a>"
     ])
 
 @app.route("/", methods=['POST'])
@@ -30,3 +31,9 @@ def post():
     content = response.read()
     return {"url": url, "content": content.decode('utf-8')}
       
+
+@app.route("/the-easy-one", methods=['GET'])
+def indexf():
+    return '<br>\n'.join([
+       'EasyFlag?ThereIsNoSuchThing'
+    ])
