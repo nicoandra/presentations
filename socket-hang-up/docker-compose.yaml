@@ -7,24 +7,29 @@ services:
     working_dir: /app
     volumes:
     - ./code:/app
+    environment:
+    - HTTP_KEEPALIVE=false
+    - ITERATIONS=4
+    # - NODE_DEBUG=net
     command:
     - "node"
     - "client.js"
     # sysctls:
-      # net.ipv4.ip_local_port_range: 1024 1223
+    #  net.ipv4.ip_local_port_range: 1024 1025 ## Uncomment this for "EADDRNOTAVAIL"
 
   server:
     image: node:13.2.0-stretch
     working_dir: /app
     ports:
-    - '3000:3000'
+    - 9990:3000
     volumes:
     - ./code:/app
     command:
     - "node"
     - "server.js"
     environment:
-    - SLOWDOWN_MS=10
+    - SLOWDOWN_MS=5000
+    # - NODE_DEBUG=net
     sysctls:
       net.core.somaxconn: 1
 
@@ -32,7 +37,7 @@ services:
     image: node:alpine
     working_dir: /app
     ports:
-    - '3001:3000'
+    - '9991:3000'
     volumes:
     - ./code:/app
     command:
