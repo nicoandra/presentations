@@ -43,3 +43,13 @@ services:
     command:
     - "node"
     - "proxy.js"
+
+
+  dns:
+    image: node:alpine
+    working_dir: /app
+    volumes:
+    - ./code:/app
+    command:
+    - "node"
+    - "dns.js"
