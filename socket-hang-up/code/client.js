@@ -1,29 +1,23 @@
 const http = require('http')
 
-const agent = new http.Agent({ 
-  keepAlive: (process.env['HTTP_KEEPALIVE'] || 'false') === 'true',
+const agent = new http.Agent({
+  keepAlive: (process.env['HTTP_KEEPALIVE'] || 'false') === 'true',
   maxSockets: 2,
   timeout: 200
 })
 
-const REMOTE_HOST = process.env['REMOTE_HOST'] || 'server';
+const REMOTE_HOST = process.env['REMOTE_HOST'] || 'server'
 const ITERATIONS = parseInt(process.env['ITERATIONS'] || '1')
+const ENDPOINT = process.env['ENDPOINT'] || false
 
-const call = (iteration) => {
+const call = () => {
   const start = +(new Date())
 
-  let url = iteration;
-  switch(iteration) {
-    case 2:
-      url = 'destroy'; break;
-    case 3:
-      url = 'end'; break;
-    default:
-    // none
-  }
+  let url = ENDPOINT
+  // URL can be destroy, end or memory
 
   return new Promise((ok, ko) => {
-    http.get('http://' + REMOTE_HOST +':3000/' + url, { agent }, (resp) => {
+    http.get('http://' + REMOTE_HOST + ':3000/' + url, (resp) => {
       let data = ''
 
       // A chunk of data has been recieved.
@@ -40,13 +34,14 @@ const call = (iteration) => {
       const time = end - start
       return ok({err, time})
     })
+  }).catch(e => {
+    console.error('Rejection', e)
   })
 }
 
-const calls = Array(ITERATIONS).fill(0).map((v,x) => call(x))
+const calls = Array(ITERATIONS).fill(0).map((v, x) => call())
 
-console.log("Running", calls.length, "iterations");
-
+console.log('Running', calls.length, 'iterations')
 
 Promise.all(calls).then(l => {
   return l.reduce((p, c) => {
@@ -66,11 +61,10 @@ Promise.all(calls).then(l => {
   console.log(r)
 })
 
-
 setInterval(() => {
 
-  const actualSockets = agent.sockets['server:3000:'] ? agent.sockets['server:3000:'].length : 0;
-  const queuedRequests = agent.requests['server:3000:'] ? agent.requests['server:3000:'].length : 0;
+  const actualSockets = agent.sockets['server:3000:'] ? agent.sockets['server:3000:'].length : 0
+  const queuedRequests = agent.requests['server:3000:'] ? agent.requests['server:3000:'].length : 0
 
   console.log({maxSockets: agent.maxSockets, queuedRequests, actualSockets})
 }, 1000)
