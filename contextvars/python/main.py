@@ -14,6 +14,7 @@ async def keep_context(request: Request, call_next):
     username = request.query_params.get('username', 'anonymous user')
     
     with ExecutionContext(user_agent=user_agent, username=username) as context:
+        # Process the request within an execution context.
         response = await call_next(request)
 
     return response
