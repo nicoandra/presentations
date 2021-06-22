@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start-express": "node index-express.js",
+    "start-hapi": "node index-hapi.js"
   },
   "author": "",
   "license": "ISC",
