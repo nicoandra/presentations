@@ -1,46 +1,33 @@
 'use strict';
-const async_hooks = require('async_hooks');
-const Hapi = require('@hapi/hapi');
+const express = require('express')
+const app = express()
 const {log} = require('./console')
+const {runWithinContext, createExecutionContext, getCurrentContext} = require('./context')
+const { pretendSqlQueryPromise, pretendSqlQueryCallback } = require('./database')
 
-const asyncHook = async_hooks.createHook({
-    init(asyncId, type, triggerAsyncId, resource) {
-        log("Creating a new context", asyncId)
-    },
-    destroy(asyncId) {
-        log("Destroying the context", asyncId)
-    }
-}).enable()
+app.use((req, res, next)=>{
+    const userAgent = req.headers['user-agent'] || 'Unknown user agent';
+    const username = req.query['username'] || 'Anonymous user';
+    const executionContext = createExecutionContext(userAgent, username);
+    runWithinContext(executionContext, () => next())
+})
 
-const init = async () => {
-    const server = Hapi.server({
-        port: 8081,
-        host: '0.0.0.0'
-    });
+app.get('/', function (req, res) {
+    res.send('Hello World, the context is ' + JSON.stringify(getCurrentContext()))
+})
 
+app.get('/async/:someParam', async function (req, res) {
+    const queryResult = await pretendSqlQueryPromise(req.someParam)
+    const timeItTook = getCurrentContext().getExecutionTime()
+    res.send({queryResult, timeItTook})
+})
 
-    server.ext('onRequest', function (request, h) {
-        log("On Request called")
-        return h.continue;
-    });
+app.get('/callback/:someParam', async function (req, res) {
+    pretendSqlQueryCallback(req.someParam, (err, queryResult) => {
+        const timeItTook = getCurrentContext().getExecutionTime()
 
+        res.send({queryResult, timeItTook})
+    })
+})
 
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-            const asyncId = async_hooks.executionAsyncId()
-            return 'Hello World, the asyncId is ' + asyncId.toString();
-        }
-    });
-
-    await server.start();
-    log('Server running on %s', server.info.uri);
-};
-
-process.on('unhandledRejection', (err) => {
-    log(err);
-    process.exit(1);
-});
-
-init();
+app.listen(8081)
