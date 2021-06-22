@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  python-sample:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
+    environment:
+      - PORT=8080
+    volumes:
+        - ./python:/app
+    ports:
+      - 8080:8080
+    
