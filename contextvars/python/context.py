@@ -25,7 +25,6 @@ class ExecutionContext():
     def current() -> "ExecutionContext":
         """Returns the current ExecutionContext or a clean one if there's no current context."""
         return ExecutionContext._contextvar.get(ExecutionContext())
-        return the_context
 
     def __iter__(self):
         """ Magic method to create dictionnaries """

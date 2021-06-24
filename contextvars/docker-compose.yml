@@ -1,20 +1,33 @@
 version: "3.8"
 
 services:
-  python-sample:
-    image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
+  python-fastapi:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
     environment:
       - PORT=8080
     volumes:
-        - ./python:/app
+      - ./python:/app
     ports:
       - 8080:8080
     
-  nodejs-sample:
+  nodejs-express:
     build:
       context: ./nodejs
       dockerfile: Dockerfile
+      target: express
     volumes:
-        - ./nodejs:/app
+      - ./nodejs:/app
     ports:
       - 8081:8081
+  
+  nodejs-hapi:
+    build:
+      context: ./nodejs
+      dockerfile: Dockerfile
+      target: hapi
+    volumes:
+      - ./nodejs:/app
+    ports:
+      - 8082:8082

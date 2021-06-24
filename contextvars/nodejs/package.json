@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-express": "node index-express.js",
-    "start-hapi": "node index-hapi.js"
+    "start-express": "nodemon index-express.js",
+    "start-hapi": "nodemon index-hapi.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hapi/hapi": "^20.1.4",
     "express": "^4.17.1",
+    "nodemon": "^2.0.7",
     "uuid": "^8.3.2"
   }
 }
