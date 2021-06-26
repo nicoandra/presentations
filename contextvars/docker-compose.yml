@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=8080
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=DEBUG
     volumes:
       - ./python:/app
     ports:

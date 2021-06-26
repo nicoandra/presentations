@@ -29,7 +29,7 @@ class ExecutionContext():
     def __iter__(self):
         """ Magic method to create dictionnaries """
         yield 'user_agent', self.user_agent
-        yield 'started_at', self.started_at
+        yield 'started_at', str(self.started_at)
         yield 'username', self.username
-        yield 'request_id', self.request_id
+        yield 'request_id', str(self.request_id)
         yield 'time_elapsed', perf_counter() - self.perf_timer_start

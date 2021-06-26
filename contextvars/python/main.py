@@ -3,6 +3,10 @@ from context import ExecutionContext
 from fastapi import FastAPI, Request 
 from time import sleep
 from database import Database
+import logging
+
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+
 
 app = FastAPI()
 
@@ -25,6 +29,7 @@ def read_root():
     return {"Hello": "World", "context": dict(execution_context)}
 
 
-@app.get("/pretend-query/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return database_instance.pretend_sql_query(item_id)
+@app.get("/pretend-query/{string_to_match}")
+def read_item(string_to_match: str, username: Optional[str] = "some-username"):
+    # Note the context is not passed as parameter
+    return database_instance.pretend_sql_query(string_to_match)
